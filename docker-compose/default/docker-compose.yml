@@ -13,7 +13,7 @@ services:
       service: network-deploy-service
 
   configserver:
-    image: "jaimerey/configserver:s11"
+    image: "jaimerey/configserver:s12"
     container_name: configserver-ms
     ports:
       - "8071:8071"
@@ -28,7 +28,7 @@ services:
       service: microservice-base-config
 
   eurekaserver:
-    image: "jaimerey/eurekaserver:s11"
+    image: "jaimerey/eurekaserver:s12"
     container_name: eurekaserver-ms
     ports:
       - "8070:8070"
@@ -48,7 +48,7 @@ services:
       SPRING_APPLICATION_NAME: "eurekaserver"
 
   accounts:
-    image: "jaimerey/accounts:s11"
+    image: "jaimerey/accounts:s12"
     container_name: accounts-ms
     ports:
       - "8080:8080"
@@ -70,7 +70,7 @@ services:
       service: microservice-eureka-config
 
   loans:
-    image: "jaimerey/loans:s11"
+    image: "jaimerey/loans:s12"
     container_name: loans-ms
     ports:
       - "8090:8090"
@@ -92,7 +92,7 @@ services:
       service: microservice-eureka-config
 
   cards:
-    image: "jaimerey/cards:s11"
+    image: "jaimerey/cards:s12"
     container_name: cards-ms
     ports:
       - "9000:9000"
@@ -114,7 +114,7 @@ services:
       service: microservice-eureka-config
 
   gatewayserver:
-    image: "jaimerey/gatewayserver:s11"
+    image: "jaimerey/gatewayserver:s12"
     container_name: gatewayserver-ms
     ports:
       - "8072:8072"
