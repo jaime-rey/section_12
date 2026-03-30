@@ -163,7 +163,7 @@ services:
       service: network-deploy-service
 
   configserver:
-    image: "jaimerey/configserver:s12"
+    image: "jaimerey/configserver:s13"
     container_name: configserver-ms
     ports:
       - "8071:8071"
@@ -180,7 +180,7 @@ services:
       OTEL_SERVICE_NAME: "configserver"
 
   eurekaserver:
-    image: "jaimerey/eurekaserver:s12"
+    image: "jaimerey/eurekaserver:s13"
     container_name: eurekaserver-ms
     ports:
       - "8070:8070"
@@ -201,7 +201,7 @@ services:
       OTEL_SERVICE_NAME: "eurekaserver"
 
   accounts:
-    image: "jaimerey/accounts:s12"
+    image: "jaimerey/accounts:s13"
     container_name: accounts-ms
     depends_on:
       configserver:
@@ -222,7 +222,7 @@ services:
       service: microservice-eureka-config
 
   loans:
-    image: "jaimerey/loans:s12"
+    image: "jaimerey/loans:s13"
     container_name: loans-ms
     depends_on:
       configserver:
@@ -243,7 +243,7 @@ services:
       service: microservice-eureka-config
 
   cards:
-    image: "jaimerey/cards:s12"
+    image: "jaimerey/cards:s13"
     container_name: cards-ms
     depends_on:
       configserver:
@@ -264,7 +264,7 @@ services:
       service: microservice-eureka-config
 
   gatewayserver:
-    image: "jaimerey/gatewayserver:s12"
+    image: "jaimerey/gatewayserver:s13"
     container_name: gatewayserver-ms
     ports:
       - "8072:8072"

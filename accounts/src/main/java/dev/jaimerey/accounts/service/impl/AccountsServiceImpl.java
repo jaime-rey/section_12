@@ -2,6 +2,7 @@ package dev.jaimerey.accounts.service.impl;
 
 import dev.jaimerey.accounts.constants.AccountsConstants;
 import dev.jaimerey.accounts.dto.AccountsDto;
+import dev.jaimerey.accounts.dto.AccountsMsgDto;
 import dev.jaimerey.accounts.dto.CustomerDto;
 import dev.jaimerey.accounts.entity.Accounts;
 import dev.jaimerey.accounts.entity.Customer;
@@ -13,6 +14,9 @@ import dev.jaimerey.accounts.repository.AccountsRepository;
 import dev.jaimerey.accounts.repository.CustomerRepository;
 import dev.jaimerey.accounts.service.IAccountsService;
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.stereotype.Service;
 import java.util.Optional;
 import java.util.Random;
@@ -20,6 +24,10 @@ import java.util.Random;
 @Service
 @AllArgsConstructor
 public class AccountsServiceImpl implements IAccountsService {
+
+    public static final Logger log = LoggerFactory.getLogger(AccountsServiceImpl.class);
+
+    private final StreamBridge streamBridge;
 
     private final AccountsRepository accountsRepository;
     private final CustomerRepository customerRepository;
@@ -31,8 +39,11 @@ public class AccountsServiceImpl implements IAccountsService {
         if (optionalCustomer.isPresent()) {
             throw new CustomerAlreadyExistsException("Customer with mobile number " + customer.getMobileNumber() + " already exists.");
         }
-        Customer customerSaved = customerRepository.save(customer);
-        accountsRepository.save(createNewAccount(customerSaved));
+        Customer savedCustomer = customerRepository.save(customer);
+        Accounts savedAccount = accountsRepository.save(createNewAccount(savedCustomer));
+
+        sendCommunication(savedAccount, savedCustomer);
+
     }
 
     @Override
@@ -90,6 +101,27 @@ public class AccountsServiceImpl implements IAccountsService {
         return true;
     }
 
+    @Override
+    public boolean updateCommunicationStatus(Long accountNumber) {
+        boolean isUpdated = Boolean.FALSE;
+
+        if (accountNumber != null) {
+            Accounts accounts = accountsRepository.findById(accountNumber)
+                    .orElseThrow(
+                            () -> new ResourceNotFoundException(
+                                    "Account",
+                                    "AccountNumber",
+                                    String.valueOf(accountNumber)
+                            )
+                    );
+
+            accounts.setCommunicationSw(Boolean.TRUE);
+            accountsRepository.save(accounts);
+            isUpdated = true;
+        }
+        return isUpdated;
+    }
+
     /**
      * @param customer - Customer Object
      * @return the new account details
@@ -104,5 +136,23 @@ public class AccountsServiceImpl implements IAccountsService {
         newAccount.setBranchAddress(AccountsConstants.ADDRESS);
         return newAccount;
     }
+
+    private void sendCommunication(Accounts account, Customer customer){
+
+        var accountsMsgDto = AccountsMsgDto.builder()
+                .accountNumber(account.getAccountNumber())
+                .name(customer.getName())
+                .email(customer.getEmail())
+                .mobileNumber(customer.getMobileNumber())
+                .build();
+
+        log.info("Sending Communication request for the details: {}", accountsMsgDto);
+
+        var result = streamBridge.send("sendCommunication-out-0", accountsMsgDto);
+
+        log.info("Is the Communication request successfully triggered?: {}", result);
+
+    }
+
 
 }

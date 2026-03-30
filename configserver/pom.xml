@@ -80,7 +80,7 @@
                         <image>amazoncorretto:26</image>
                     </from>
                     <to>
-                        <image>jaimerey/${project.artifactId}:s12</image>
+                        <image>jaimerey/${project.artifactId}:s13</image>
                     </to>
                     <container>
                         <mainClass>dev.jaimerey.configserver.ConfigserverApplication</mainClass>
